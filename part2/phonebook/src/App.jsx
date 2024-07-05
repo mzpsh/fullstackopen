@@ -1,11 +1,19 @@
-import { useState } from 'react'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import personsService from './services/persons.js'; 
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '0800-11112222'}
+    { name: 'Arto Hellas', number: '0800-11112222', id: "0"}
   ]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  
+  const hook = () => {
+    personsService.getAll().then(data => setPersons(data))
+  }
+
+  useEffect(hook, [])
 
   const handleNewName = (event) => {
     setNewName(event.target.value)
@@ -17,12 +25,34 @@ const App = () => {
 
   const handleOnSubmit = (event) => {
     event.preventDefault()
+    const newPerson = {name: newName, number: newNumber};
+
     if(persons.map(e => e.name).includes(newName)) {
-      alert(`${newName} is already exist on the phonebook.`)
+      const existingPerson = persons.find(person => person.name === newName);
+      const { id } = existingPerson;
+      if(confirm(`${newName} is already on the phonebook, update the phone number?`)) {
+        personsService.update(id, newPerson).then(data => {
+          setPersons(data);
+          setNewName('')  
+          setNewNumber('')  
+        })
+      }
     } else {
-      setPersons(persons.concat({name: newName, number: newNumber}));
-      setNewName('')  
-      setNewNumber('')  
+      personsService.create(newPerson).then(data => {
+          setPersons(persons.concat(data));
+          setNewName('')  
+          setNewNumber('')  
+        })
+    }
+  }
+
+  const handleOnDelete = (id) => {
+    if(window.confirm(`Delete ${persons.find(person => person.id === id).name}?`)) {
+      personsService.remove(id).then(reponse => {
+        setPersons(
+          persons.filter(person => person.id !== id)
+        )
+      })
     }
   }
 
@@ -41,15 +71,15 @@ const App = () => {
       <PersonForm {...{handleOnSubmit, newName, handleNewName, newNumber, handleNewNumber}}/>
       <h2>Numbers</h2>
       <FilterForm {...{filter, handleFilter}}/>
-      <PersonList filteredPersons={filteredPersons()}/>
+      <PersonList filteredPersons={filteredPersons()} handleOnDelete={handleOnDelete}/>
     </div>
   )
 }
 
-const PersonList = ({filteredPersons}) => <>
+const PersonList = ({filteredPersons, handleOnDelete}) => <>
     {
       filteredPersons.map(
-        person => <p key={person.name}>{person.name} {person.number}</p>
+        person => <p key={person.name}>{person.name} {person.number} <button onClick={() => handleOnDelete(person.id)}>Delete</button></p>
       )
     }
   </>
