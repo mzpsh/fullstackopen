@@ -6,8 +6,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      // '/api': {
+      //   target: 'https://fullstackopen-part3-patient-glitter-555.fly.dev/',
+      //   changeOrigin: true,
+      // },
       '/api': {
-        target: 'https://fullstackopen-part3-patient-glitter-555.fly.dev/',
+        target: 'http://localhost:3001',
         changeOrigin: true,
       }
     }
