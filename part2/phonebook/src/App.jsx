@@ -47,19 +47,28 @@ const App = () => {
       const existingPerson = persons.find(person => person.name === newName);
       const { id } = existingPerson;
       if(confirm(`${newName} is already on the phonebook, update the phone number?`)) {
-        personsService.update(id, newPerson).then(data => {
+        personsService.create(newPerson).then(data => {
           setPersons(persons.map(person => person.id !== id ? person : data));
           setNewName('')  
           setNewNumber('')
           setMessageAndTimeout(`${newName} updated`)
         })
+        .catch(error => {
+          console.log(error);
+          setErrorAndTimeout(error.response.data.error)
+        })
       }
     } else {
       personsService.create(newPerson).then(data => {
+          console.log(data)
           setPersons(persons.concat(data));
           setNewName('')
           setNewNumber('')  
           setMessageAndTimeout(`${newName} added`)
+        })
+        .catch(error => {
+          console.log(error);
+          setErrorAndTimeout(error.response.data.error)
         })
     }
   }
