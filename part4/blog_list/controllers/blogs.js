@@ -1,47 +1,38 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 
-// blogsRouter.get('/', async (request, response) => {
-//     const blogs = await Blog.find({})
-//     response.json(blogs)
-//   })
+blogsRouter.get('/', async (request, response) => {
+    const blogs = await Blog.find({})
+    response.json(blogs)
+  })
   
-blogsRouter.post('/', (request, response) => {
-    // somehow body is undefined???
-    console.log(request.body)
-    // const blog = new Blog(request.body)
-    // const result = blog.save()
-    
 
-    // blog
-    //   .save()
-    //   .then(result => {
-    //     response.status(201).json(result)
-    //   })
+blogsRouter.post('/', async (request, response) => {
+  const body = request.body;
+  if(body.title === undefined || body.url === undefined) {
+    response.status(400).end()
+  } else {
+    const emptyLike = {likes: 0}
+    const blog = new Blog({
+      ...emptyLike,
+      ...request.body,
+    })
+
+    const result = await blog.save()
+    response.status(201).json(result)
+  } 
 })
 
+blogsRouter.delete('/:id', async (request, response) => {
+  await Blog.findByIdAndDelete(request.params.id)
+  response.status(204).end()
+})
 
-// blogsRouter.post('/', async (request, response) => {
-//   console.log(request.body)
-//   console.log(response.body)
+blogsRouter.put('/:id', async (request, response) => {
+  const newBlogData = request.body;
+  const result = await Blog.findByIdAndUpdate(request.params.id, newBlogData, { new: true })
 
-//   const emptyLike = {likes: 0}
-//   const blog = new Blog({
-//     ...emptyLike,
-//     ...request.body,
-//   })
-
-//   // if(!Object.hasOwn(request.body, 'likes')) {
-//   //   blog = new Blog({
-//   //     ...response.body,
-//   //     likes: 0,
-//   //   })
-//   // } else {
-//   //   blog = new Blog(request.body)
-//   // }
-  
-//   // const result = await blog.save()
-//   // response.status(201).json(result)
-// })
+  response.json(result)
+})
 
 module.exports = blogsRouter

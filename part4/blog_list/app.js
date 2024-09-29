@@ -1,4 +1,5 @@
 const express = require('express')
+require('express-async-error')
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
@@ -14,9 +15,9 @@ mongoose.connect(config.MONGO_URI)
     console.log('error connecting to database: ', error.message)
   })
 
-app.use('/api/blogs/', blogsRouter)
-
 app.use(cors())
 app.use(express.json())
+
+app.use('/api/blogs/', blogsRouter)
 
 module.exports = app
