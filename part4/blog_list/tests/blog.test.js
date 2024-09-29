@@ -16,6 +16,12 @@ const blogContent = {
     likes: 1,
 }
 
+const likeLessContent = {
+    title: 'Test Title',
+    author: 'Test titl',
+    url: 'google.com',
+}
+
 describe('blogs', () => {
 
     test('should returned as json', async () => {
@@ -41,6 +47,47 @@ describe('blogs', () => {
         assert.strictEqual(json['id'], dbResponse._id.toString())
 
         await newBlog.deleteOne()
+    })
+
+    test('successfully created a post using api', async () => {
+        await api
+            .post('/api/blogs')
+            .send(blogContent)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        const response = await api.get('/api/blogs')
+        assert.strictEqual(response.body.length, 1)
+
+        await Blog.findById(response.body[0]['id']).deleteOne()
+    })
+
+    test('with missing like, successfully created a post using api', async () => {
+        await api
+            .post('/api/blogs')
+            .send(likeLessContent)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        const response = await api.get('/api/blogs')
+        assert.strictEqual(response.body.length, 1)
+        assert.strictEqual(response.body[0]['likes'], 0)
+
+        await Blog.findById(response.body[0]['id']).deleteOne()
+    })
+
+    test.only('with missing title or url, return 400', async () => {
+        await api
+            .post('/api/blogs')
+            .send(blogContent)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        // const response = await api.get('/api/blogs')
+        // assert.strictEqual(response.body.length, 1)
+        // assert.strictEqual(response.body[0]['likes'], 0)
+
+        // await Blog.findById(response.body[0]['id']).deleteOne()
     })
 
 })
