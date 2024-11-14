@@ -1,4 +1,4 @@
-const { describe, test, beforeEach } = require('node:test')
+const { describe, test, before, after } = require('node:test')
 const assert = require('assert')
 
 const mongoose = require('mongoose')
@@ -12,11 +12,13 @@ const api = supertest(app)
 const userContent = {
   username: 'gamer',
   password: 'gamer123',
-  nsme: 'Pro Gamer'
+  name: 'Pro Gamer'
 }
 
+
+
 describe('user creations', () => {
-  beforeEach(async () => {
+  before(async () => {
     await User.deleteMany({})
   })
   
@@ -28,10 +30,20 @@ describe('user creations', () => {
 
       console.log(result.body)
 
-      // assert.ok(result.body['username'])
-      // assert.ok(result.body['name'])
-      // assert.ok(result.body['id'])
+      assert.ok(result.body['username'])
+      assert.ok(result.body['name'])
+      assert.ok(result.body['id'])
     })
+
+  test('return list of users and with count', async () => {
+    const result = await api.get('/api/users')
+      .send()
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    assert.strictEqual(result.body.length, 1)
+  })
+    
 })
 
 after(async () => {
