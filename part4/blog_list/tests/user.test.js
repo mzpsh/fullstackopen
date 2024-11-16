@@ -1,4 +1,4 @@
-const { describe, test, before, after } = require('node:test')
+const { describe, test, before, beforeEach, after } = require('node:test')
 const assert = require('assert')
 
 const mongoose = require('mongoose')
@@ -15,7 +15,68 @@ const userContent = {
   name: 'Pro Gamer'
 }
 
+const nonUniqueUsername = {
+  username: 'gamer',
+  password: 'hehe312',
+  name: 'Haxor Gamer'
+}
 
+const missingUsername = {
+  password: 'asdadad',
+  name: 'Let Me Cook'
+}
+
+const missingPassword = {
+  username: 'asdadad',
+  name: 'Let Me Cook'
+}
+
+const shortUsername = {
+  username: 'aa',
+  password: 'dddd',
+  name: 'Let Me Cook'
+}
+
+const shortPassword = {
+  username: 'aaaa',
+  password: 'dd',
+  name: 'Let Me Cook'
+}
+
+describe('user creation rules', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+  })
+
+  test('throw error for username/password requirement', async () => {
+    const resultMissingUsername = await api.post('/api/users')
+      .send(missingUsername)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    assert.strictEqual(resultMissingUsername.body['error'], 'Username is required')
+
+    const resultMissingPassword = await api.post('/api/users')
+      .send(missingPassword)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+      assert.strictEqual(resultMissingPassword.body['error'], 'Password is required')
+    })
+
+  test.only('throw error for insufficient username/password length', async () => {
+    const resultShortUsername = await api.post('/api/users')
+      .send(shortUsername)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    assert.strictEqual(resultShortUsername.body['error'], 'Username needs to be atleast 3 character long')
+
+    const resultShortPassword = await api.post('/api/users')
+      .send(shortPassword)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+      assert.strictEqual(resultShortPassword.body['error'], 'Password needs to be atleast 3 character long')
+  })
+  
+})
 
 describe('user creations', () => {
   before(async () => {
@@ -27,8 +88,6 @@ describe('user creations', () => {
       .send(userContent)
       .expect(201)
       .expect('Content-Type', /application\/json/)
-
-      console.log(result.body)
 
       assert.ok(result.body['username'])
       assert.ok(result.body['name'])
