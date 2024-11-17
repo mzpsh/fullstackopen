@@ -9,6 +9,9 @@ const Blog = require('../models/blog')
 
 const api = supertest(app);
 
+const { userContent } = require('./users_helper')
+const User = require('../models/user')
+
 const blogContent = {
   title: 'Test Title',
   author: 'Test Author',
@@ -52,9 +55,13 @@ describe('when blog has some posts', () => {
   })
 })
 
-describe.only('post creations', () => {
+describe('post creations', () => {
+  beforeEach(async () => {
+    await new User(userContent).save()
+  })
   afterEach(async () => {
     await Blog.deleteMany({})
+    await User.deleteMany({})
   })
 
   test('have id but not _id and __v', async () => {
@@ -67,14 +74,12 @@ describe.only('post creations', () => {
     assert.strictEqual(json['id'], dbResponse._id.toString())
   })
 
-  test.only('successfully created a post using api', async () => {
+  test('successfully created a post using api', async () => {
     const result = await api
       .post('/api/blogs')
       .send(blogContent)
       .expect(201)
       .expect('Content-Type', /application\/json/)
-
-    console.log(result.body)
 
     const response = await api.get('/api/blogs')
     assert.strictEqual(response.body.length, 1)

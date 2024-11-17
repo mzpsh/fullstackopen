@@ -1,0 +1,5 @@
+refresh from 4a
+
+update .rest files
+add simple 500 error middleware/logger thingy
+use try catch on controllers

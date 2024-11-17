@@ -9,41 +9,16 @@ const User = require('../models/user')
 
 const api = supertest(app)
 
-const userContent = {
-  username: 'gamer',
-  password: 'gamer123',
-  name: 'Pro Gamer'
-}
+const {
+  userContent,
+  nonUniqueUsername,
+  missingUsername,
+  missingPassword,
+  shortUsername,
+  shortPassword,
+} = require('./users_helper')
 
-const nonUniqueUsername = {
-  username: 'gamer',
-  password: 'hehe312',
-  name: 'Haxor Gamer'
-}
-
-const missingUsername = {
-  password: 'asdadad',
-  name: 'Let Me Cook'
-}
-
-const missingPassword = {
-  username: 'asdadad',
-  name: 'Let Me Cook'
-}
-
-const shortUsername = {
-  username: 'aa',
-  password: 'dddd',
-  name: 'Let Me Cook'
-}
-
-const shortPassword = {
-  username: 'aaaa',
-  password: 'dd',
-  name: 'Let Me Cook'
-}
-
-describe.only('user creation rules', () => {
+describe('user creation rules', () => {
   beforeEach(async () => {
     await User.deleteMany({})
   })
