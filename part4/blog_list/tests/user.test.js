@@ -43,7 +43,7 @@ const shortPassword = {
   name: 'Let Me Cook'
 }
 
-describe('user creation rules', () => {
+describe.only('user creation rules', () => {
   beforeEach(async () => {
     await User.deleteMany({})
   })
@@ -62,7 +62,7 @@ describe('user creation rules', () => {
       assert.strictEqual(resultMissingPassword.body['error'], 'Password is required')
     })
 
-  test.only('throw error for insufficient username/password length', async () => {
+  test('throw error for insufficient username/password length', async () => {
     const resultShortUsername = await api.post('/api/users')
       .send(shortUsername)
       .expect(400)
@@ -74,6 +74,17 @@ describe('user creation rules', () => {
       .expect(400)
       .expect('Content-Type', /application\/json/)
       assert.strictEqual(resultShortPassword.body['error'], 'Password needs to be atleast 3 character long')
+  })
+
+  test('throw error if existing username exist', async () => {
+    await api.post('/api/users/').send(userContent)
+
+    const result = await api.post('/api/users')
+      .send(userContent)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert.strictEqual(result.body['error'], 'Username exist')
   })
   
 })
