@@ -11,7 +11,7 @@ const api = supertest(app)
 
 const {
   userContent,
-  nonUniqueUsername,
+  // nonUniqueUsername,
   missingUsername,
   missingPassword,
   shortUsername,
@@ -34,8 +34,8 @@ describe('user creation rules', () => {
       .send(missingPassword)
       .expect(400)
       .expect('Content-Type', /application\/json/)
-      assert.strictEqual(resultMissingPassword.body['error'], 'Password is required')
-    })
+    assert.strictEqual(resultMissingPassword.body['error'], 'Password is required')
+  })
 
   test('throw error for insufficient username/password length', async () => {
     const resultShortUsername = await api.post('/api/users')
@@ -48,7 +48,7 @@ describe('user creation rules', () => {
       .send(shortPassword)
       .expect(400)
       .expect('Content-Type', /application\/json/)
-      assert.strictEqual(resultShortPassword.body['error'], 'Password needs to be atleast 3 character long')
+    assert.strictEqual(resultShortPassword.body['error'], 'Password needs to be atleast 3 character long')
   })
 
   test('throw error if existing username exist', async () => {
@@ -75,10 +75,10 @@ describe('user creations', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
-      assert.ok(result.body['username'])
-      assert.ok(result.body['name'])
-      assert.ok(result.body['id'])
-    })
+    assert.ok(result.body['username'])
+    assert.ok(result.body['name'])
+    assert.ok(result.body['id'])
+  })
 
   test('return list of users and with count', async () => {
     const result = await api.get('/api/users')

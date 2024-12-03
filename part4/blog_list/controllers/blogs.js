@@ -3,9 +3,9 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 
 blogsRouter.get('/', async (request, response) => {
-    const blogs = await Blog.find({})
-    response.json(blogs)
-  })
+  const blogs = await Blog.find({}).populate('creator')
+  response.json(blogs)
+})
   
 
 blogsRouter.post('/', async (request, response) => {
@@ -15,7 +15,6 @@ blogsRouter.post('/', async (request, response) => {
   } else {
     const firstUser = await User.findOne({})
 
-
     const emptyLike = {likes: 0}
     const blog = new Blog({
       ...emptyLike,
@@ -24,9 +23,16 @@ blogsRouter.post('/', async (request, response) => {
     })
 
     const result = await blog.save()
-    const populated = await result.populate('creator')
+    const populatedBlog = await result.populate('creator')
 
-    response.status(201).json(populated)
+    await User.findByIdAndUpdate(firstUser.id, {
+      posts: [
+        ...firstUser.posts,
+        result.id,
+      ]
+    })
+
+    response.status(201).json(populatedBlog)
   } 
 })
 

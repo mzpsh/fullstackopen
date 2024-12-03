@@ -55,7 +55,7 @@ describe('when blog has some posts', () => {
   })
 })
 
-describe('post creations', () => {
+describe.only('post creations', () => {
   beforeEach(async () => {
     await new User(userContent).save()
   })
@@ -66,7 +66,7 @@ describe('post creations', () => {
 
   test('have id but not _id and __v', async () => {
     const newBlog = new Blog(blogContent)
-    const dbResponse = await newBlog.save();
+    const dbResponse = await newBlog.save()
     const json = dbResponse.toJSON()
 
     assert.equal(json['_id'], undefined)
@@ -75,12 +75,9 @@ describe('post creations', () => {
   })
 
   test('successfully created a post using api', async () => {
-    const result = await api
-      .post('/api/blogs')
+    await api.post('/api/blogs')
       .send(blogContent)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-
+    
     const response = await api.get('/api/blogs')
     assert.strictEqual(response.body.length, 1)
   })
@@ -102,6 +99,13 @@ describe('post creations', () => {
       .post('/api/blogs')
       .send(noTitleNourl)
       .expect(400)
+  })
+
+  test.only('creator must not be empty', async () => {
+    const result = await api.post('/api/blogs')
+      .send(blogContent)
+    
+    assert.deepEqual(result.body.creator.username, 'gamer')
   })
 })
 

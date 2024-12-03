@@ -1,0 +1,14 @@
+@baseUrl = http://localhost:3003
+
+###
+GET {{baseUrl}}/api/users
+
+###
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "username": "gamer",
+  "password": "gamer123",
+  "name": "Pro Gamer"
+}
