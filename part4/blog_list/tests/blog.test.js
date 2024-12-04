@@ -55,7 +55,7 @@ describe('when blog has some posts', () => {
   })
 })
 
-describe.only('post creations', () => {
+describe('post creations', () => {
   beforeEach(async () => {
     await new User(userContent).save()
   })
@@ -101,7 +101,7 @@ describe.only('post creations', () => {
       .expect(400)
   })
 
-  test.only('creator must not be empty', async () => {
+  test('creator must not be empty', async () => {
     const result = await api.post('/api/blogs')
       .send(blogContent)
     
