@@ -1,19 +1,32 @@
 const express = require('express')
+const privateRouter = express.Router()
 
 const app = express()
 
+app.use((req, res, next) => {
+    req.someVariable = "you've been intercepted"
+    next()
+})
+
+app.use('/private', (req, res, next) => {
+    req.someVariable = 'ditto'
+    next()
+})
+
+privateRouter.get('/hi', (req, res) => {
+    res.send(`hi ${req.someVariable}`)
+})
+
+privateRouter.get('/hello', (req, res) => {
+    res.send(`hello ${req.someVariable}`)
+})
+
 app.get('/', (req, res) => {
-    res.send('Hello');
+    res.send(`Hello ${req.someVariable}`);
 })
 
+app.use('/private', privateRouter)
 
-app.get('/323', (req, res, next) => {
-    // try {
-        throw new Error("random error");
-    // } catch (error) {
-    //     next(error)
-    // }
-})
 
 app.use((error, req, res, next) => {
     console.error(error.stack)

@@ -9,31 +9,34 @@ blogsRouter.get('/', async (request, response) => {
   
 
 blogsRouter.post('/', async (request, response) => {
+  if()
+
   const body = request.body;
   if(body.title === undefined || body.url === undefined) {
-    response.status(400).end()
-  } else {
-    const firstUser = await User.findOne({})
-
-    const emptyLike = {likes: 0}
-    const blog = new Blog({
-      ...emptyLike,
-      ...request.body,
-      creator: firstUser.id
-    })
-
-    const result = await blog.save()
-    const populatedBlog = await result.populate('creator')
-
-    await User.findByIdAndUpdate(firstUser.id, {
-      posts: [
-        ...firstUser.posts,
-        result.id,
-      ]
-    })
-
-    response.status(201).json(populatedBlog)
+    return response.status(400).end()
   } 
+
+  const firstUser = await User.findOne({})
+
+  const emptyLike = { likes: 0 }
+  const blog = new Blog({
+    ...emptyLike,
+    ...request.body,
+    creator: firstUser.id
+  })
+
+  const result = await blog.save()
+  const populatedBlog = await result.populate('creator')
+
+  await User.findByIdAndUpdate(firstUser.id, {
+    posts: [
+      ...firstUser.posts,
+      result.id,
+    ]
+  })
+
+  response.status(201).json(populatedBlog)
+  
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
