@@ -129,19 +129,39 @@ describe('post creations', () => {
     
     assert.deepEqual(result.body.creator.username, 'gamer')
   })
+
+  test('missing token should return 401', async () => {
+    await api.post('/api/blogs')
+      .send(blogContent)
+      .expect(401)
+  })
 })
 
 describe('post deletions', () => {
   beforeEach(async () => {
     await Blog.deleteMany({})
+    await User.deleteMany({})
+   
   })
   test('delete single post', async () => {
-    const newBlog = new Blog(blogContent)
-    const dbResponse = await newBlog.save();
-    const json = dbResponse.toJSON()
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash(userContent.password, saltRounds)
+    const user = await new User({
+      ...userContent,
+      passwordHash
+    }).save()
+   
+    const newBlog = await new Blog({
+      ...blogContent,
+      creator: user.id
+    }).save()
+
+    const loggedInUser = await api.post('/api/login')
+      .send(userContent)
 
     await api
-      .delete(`/api/blogs/${json.id}`)
+      .delete(`/api/blogs/${newBlog.id}`)
+      .set('Authorization', `Bearer ${loggedInUser.body.token}`)
       .expect(204)
 
     const response = await api.get('/api/blogs')
@@ -172,5 +192,11 @@ describe('post update operations', () => {
 })
 
 after(async () => {
+  const result = await api.get('/api/users')
+    .send()
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+  console.log('User count after this test: ')
+  console.log(result.body.length)
   await mongoose.connection.close()
 })

@@ -10,8 +10,11 @@ class MissingIdentityTokenError extends Error {
 
 const tokenExtractor = (request, response, next) => {
   const authorization = request.get('authorization')
-  const token = authorization.replace('Bearer ', '')
+  if(!authorization) {
+    return next(new jwt.JsonWebTokenError('missing token'))
+  }
 
+  const token = authorization.replace('Bearer ', '')
   const decoded = jwt.decode(token, process.env.SECRET)
   if(!decoded?.id) {
     return next(new MissingIdentityTokenError('invalid username'))
