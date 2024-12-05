@@ -3,6 +3,7 @@ const assert = require('node:assert')
 
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const bcrypt = require('bcrypt')
 
 const app = require('../app')
 const Blog = require('../models/blog')
@@ -57,7 +58,12 @@ describe('when blog has some posts', () => {
 
 describe('post creations', () => {
   beforeEach(async () => {
-    await new User(userContent).save()
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash(userContent.password, saltRounds)
+    await new User({
+      ...userContent,
+      passwordHash
+    }).save()
   })
   afterEach(async () => {
     await Blog.deleteMany({})
@@ -75,7 +81,11 @@ describe('post creations', () => {
   })
 
   test('successfully created a post using api', async () => {
+    const user = await api.post('/api/login')
+      .send(userContent)
+    
     await api.post('/api/blogs')
+      .set('Authorization', `Bearer ${user.body.token}`)
       .send(blogContent)
     
     const response = await api.get('/api/blogs')
@@ -83,8 +93,12 @@ describe('post creations', () => {
   })
 
   test('with missing like, successfully created a post using api', async () => {
+    const user = await api.post('/api/login')
+      .send(userContent)
+    
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${user.body.token}`)
       .send(likeLessContent)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -95,14 +109,22 @@ describe('post creations', () => {
   })
 
   test('with missing title or url, return 400', async () => {
+    const user = await api.post('/api/login')
+      .send(userContent)
+
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${user.body.token}`)
       .send(noTitleNourl)
       .expect(400)
   })
 
   test('creator must not be empty', async () => {
+    const user = await api.post('/api/login')
+      .send(userContent)
+
     const result = await api.post('/api/blogs')
+      .set('Authorization', `Bearer ${user.body.token}`)
       .send(blogContent)
     
     assert.deepEqual(result.body.creator.username, 'gamer')
