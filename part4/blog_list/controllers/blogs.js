@@ -9,7 +9,7 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
   
-blogsRouter.post('/', middleware.tokenExtractor)
+blogsRouter.post('/', middleware.tokenUserExtractor)
 blogsRouter.post('/', async (request, response) => {
   const body = request.body;
   if(body.title === undefined || body.url === undefined) {
@@ -37,7 +37,14 @@ blogsRouter.post('/', async (request, response) => {
   
 })
 
+blogsRouter.delete('/:id', middleware.tokenUserExtractor)
 blogsRouter.delete('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+
+  if(blog.creator.toString() !== request.tokenId) {
+    return response.status(401).json({ error: "user unauthorized to delete this post" })
+  }
+
   await Blog.findByIdAndDelete(request.params.id)
   response.status(204).end()
 })

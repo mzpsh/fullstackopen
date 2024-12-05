@@ -26,3 +26,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZha
     "url": "fake blog_title_here",
     "likes": 5
 }
+
+### gamer user trying to delete fakegamer's post
+DELETE {{baseUrl}}/api/blogs/6751b7eaaf7e9299a62a84b4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdhbWVyIiwiaWQiOiI2NzRlZjhkMDQyMDUyNGFjNDBlZTFjOGEiLCJpYXQiOjE3MzM0MDI0NDQsImV4cCI6MTczMzQwNjA0NH0.UHGuSc4zsyoZqOlBwkTgOvhAGeCdnI7mhMkH9YS1icw
+
+### fakegamer delete it's own post
+DELETE {{baseUrl}}/api/blogs/6751b7eaaf7e9299a62a84b4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZha2VnYW1lciIsImlkIjoiNjc1MWI0ZjRlZjkyZTNmOWZjZTNjY2EyIiwiaWF0IjoxNzMzNDA5Mjc4LCJleHAiOjE3MzM0MTI4Nzh9.d32mjPmTm2Wr1OCfV7oNzAA45B0SVs6CFPK6JD_p1tY

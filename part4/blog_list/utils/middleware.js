@@ -8,7 +8,7 @@ class MissingIdentityTokenError extends Error {
   }
 }
 
-const tokenExtractor = async (request, response, next) => {
+const tokenUserExtractor = async (request, response, next) => {
   const authorization = request.get('authorization')
   const token = authorization.replace('Bearer ', '')
 
@@ -26,4 +26,4 @@ const tokenExtractor = async (request, response, next) => {
 
 }
 
-module.exports = { tokenExtractor }
+module.exports = { tokenUserExtractor }
