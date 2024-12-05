@@ -192,11 +192,5 @@ describe('post update operations', () => {
 })
 
 after(async () => {
-  const result = await api.get('/api/users')
-    .send()
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-  console.log('User count after this test: ')
-  console.log(result.body.length)
   await mongoose.connection.close()
 })
