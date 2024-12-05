@@ -12,3 +12,14 @@ Content-Type: application/json
   "password": "gamer123",
   "name": "Pro Gamer"
 }
+
+
+###
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "username": "fakegamer",
+  "password": "fakegamer123",
+  "name": "Entry Gamer"
+}

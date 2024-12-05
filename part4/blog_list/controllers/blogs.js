@@ -16,21 +16,19 @@ blogsRouter.post('/', async (request, response) => {
     return response.status(400).end()
   } 
 
-  const firstUser = await User.findOne({})
-
   const emptyLike = { likes: 0 }
   const blog = new Blog({
     ...emptyLike,
     ...request.body,
-    creator: firstUser.id
+    creator: request.tokenId
   })
 
   const result = await blog.save()
   const populatedBlog = await result.populate('creator')
 
-  await User.findByIdAndUpdate(firstUser.id, {
+  await User.findByIdAndUpdate(request.tokenId, {
     posts: [
-      ...firstUser.posts,
+      ...request.tokenUser.posts,
       result.id,
     ]
   })

@@ -3,7 +3,7 @@
 ###
 GET {{baseUrl}}/api/blogs
 
-###
+### gamer user
 POST {{baseUrl}}/api/blogs
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdhbWVyIiwiaWQiOiI2NzRlZjhkMDQyMDUyNGFjNDBlZTFjOGEiLCJpYXQiOjE3MzM0MDI0NDQsImV4cCI6MTczMzQwNjA0NH0.UHGuSc4zsyoZqOlBwkTgOvhAGeCdnI7mhMkH9YS1icw
@@ -12,5 +12,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imdhb
     "title": "Blog Title Here",
     "author": "SomeUsername",
     "url": "blog_title_here",
+    "likes": 5
+}
+
+### fakegamer user
+POST {{baseUrl}}/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZha2VnYW1lciIsImlkIjoiNjc1MWI0ZjRlZjkyZTNmOWZjZTNjY2EyIiwiaWF0IjoxNzMzNDA4MDEyLCJleHAiOjE3MzM0MTE2MTJ9.ZRxQksEuvnSfCC3DfTu0Xdi2PoIiSXujp1AN4D1iSBo
+
+{
+    "title": "Blog Fake Title Here",
+    "author": "Fake SomeUsername",
+    "url": "fake blog_title_here",
     "likes": 5
 }

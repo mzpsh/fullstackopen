@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const User = require('../models/user')
 
 class MissingIdentityTokenError extends Error {
   constructor(message) {
@@ -7,17 +8,20 @@ class MissingIdentityTokenError extends Error {
   }
 }
 
-const tokenExtractor = (request, response, next) => {
+const tokenExtractor = async (request, response, next) => {
   const authorization = request.get('authorization')
   const token = authorization.replace('Bearer ', '')
 
   const decoded = jwt.decode(token, process.env.SECRET)
-  
-  if(!decoded?.id) {
-    throw new MissingIdentityTokenError('invalid username')
+  const user = await User.findById(decoded.id)
+
+  if(!decoded?.id || !user) {
+    next(new MissingIdentityTokenError('invalid username'))
   }
 
   request.tokenUsername = decoded.username;
+  request.tokenId = decoded.id;
+  request.tokenUser = user;
   next()
 
 }
