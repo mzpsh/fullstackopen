@@ -8,14 +8,25 @@ class MissingIdentityTokenError extends Error {
   }
 }
 
-const tokenUserExtractor = async (request, response, next) => {
+const tokenExtractor = (request, response, next) => {
   const authorization = request.get('authorization')
   const token = authorization.replace('Bearer ', '')
 
   const decoded = jwt.decode(token, process.env.SECRET)
+  if(!decoded?.id) {
+    return next(new MissingIdentityTokenError('invalid username'))
+  }
+
+  request.token = decoded
+  next()
+}
+
+const userExtractor = async (request, response, next) => {
+  const decoded = request.token
+
   const user = await User.findById(decoded.id)
 
-  if(!decoded?.id || !user) {
+  if(!user) {
     next(new MissingIdentityTokenError('invalid username'))
   }
 
@@ -26,4 +37,4 @@ const tokenUserExtractor = async (request, response, next) => {
 
 }
 
-module.exports = { tokenUserExtractor }
+module.exports = { tokenExtractor, userExtractor }

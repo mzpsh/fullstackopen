@@ -9,7 +9,8 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
   
-blogsRouter.post('/', middleware.tokenUserExtractor)
+blogsRouter.post('/', middleware.tokenExtractor)
+blogsRouter.post('/', middleware.userExtractor)
 blogsRouter.post('/', async (request, response) => {
   const body = request.body;
   if(body.title === undefined || body.url === undefined) {
@@ -37,7 +38,8 @@ blogsRouter.post('/', async (request, response) => {
   
 })
 
-blogsRouter.delete('/:id', middleware.tokenUserExtractor)
+blogsRouter.delete('/:id', middleware.tokenExtractor)
+blogsRouter.delete('/:id', middleware.userExtractor)
 blogsRouter.delete('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id)
 
