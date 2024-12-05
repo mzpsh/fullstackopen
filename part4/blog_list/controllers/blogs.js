@@ -1,16 +1,16 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const middleware = require('../utils/middleware')
+
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('creator')
   response.json(blogs)
 })
   
-
+blogsRouter.post('/', middleware.tokenExtractor)
 blogsRouter.post('/', async (request, response) => {
-  if()
-
   const body = request.body;
   if(body.title === undefined || body.url === undefined) {
     return response.status(400).end()
