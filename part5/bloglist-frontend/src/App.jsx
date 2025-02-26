@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
+import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -10,24 +11,50 @@ const App = () => {
     setBlogs(blogs)
   }
 
+  const [user, setUser] = useState(null)
+
+  const fetchUser = async () => {
+    const blogUserJson = window.localStorage.getItem('blogUser')
+    if (blogUserJson) {
+      setUser(JSON.parse(blogUserJson))
+    }
+  }
+
   useEffect( () => {
+    fetchUser()
     fetchBlogs()
   }, [])
 
-  const [user, setUser] = useState(null)
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('handlelogin called');
-    console.log(username);
+    
+    try {
+      const user = await loginService.login({
+        username, password
+      })
+      setUser(user)
+      setUsername('')
+      setPassword('')
+      window.localStorage.setItem('blogUser', JSON.stringify(user))
+    } catch (error) {
+      alert('Wrong credentials')
+    }
+  }
+
+  const handleSignOut = () => {
+    window.localStorage.clear('blogUser')
+    setUser(null)
   }
 
   return (
     user != null
       ? <>
         <h2>blogs</h2>
+        <p>{user['name']} is logged in <button onClick = {handleSignOut}>sign out</button></p>
         {blogs.map(blog =>
           <Blog key = {blog.id}
             blog = {blog} />
@@ -47,7 +74,7 @@ const App = () => {
           <input type = 'password'
             name = "password"
             value = {password}
-            onChange = {(event) => setPassword(event.target.value)}/>
+            onChange = {({ target }) => setPassword(target.value)}/>
         </div>
         <button type = "submit">Login</button>
       </form>
