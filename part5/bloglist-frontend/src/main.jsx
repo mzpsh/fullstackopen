@@ -4,10 +4,9 @@ import './index.css'
 
 if (import.meta.hot) {
   import.meta.hot.on(
-    "vite:beforeUpdate",
-    /* eslint-disable-next-line no-console */
+    'vite:beforeUpdate',
     () => console.clear()
-  );
+  )
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />)
