@@ -13,11 +13,13 @@ const Blog = ({ blog, handleLike, handleDeletion }) => {
   const toggleVisibility = () => setVisibility(!isVisible)
 
   return <div style = {blogStyle}>
-    {blog.title} <button onClick = {toggleVisibility}>{isVisible ? 'hide': 'show'}</button> <br />
-    <div style = {{ display: isVisible ? '' : 'none' }}>
-      {blog.url} <br />
-      {blog.likes} <button onClick = {handleLike}>like</button> <br />
-      {blog.author}<br />
+    <div className = 'blog-title'>{blog.title}</div>
+    <div className = 'blog-author'>{blog.author}</div>
+    <button onClick = {toggleVisibility}>{isVisible ? 'hide' : 'show'}</button> <br />
+    <div className = 'blog-details'
+      style = {{ display: isVisible ? '' : 'none' }}>
+      <div>{blog.url}</div>
+      <span>{blog.likes}</span> <button onClick = {handleLike}>like</button> <br />
       <button onClick = {handleDeletion}>Remove</button>
     </div>
   </div>
